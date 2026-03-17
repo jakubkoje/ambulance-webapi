@@ -39,6 +39,10 @@ case "$command" in
     go test -v ./...
     ;;
 
+  docker)
+    docker build -t xjelinekj/ambulance-wl-webapi:local-build -f "$PROJECT_ROOT/build/docker/Dockerfile" .
+    ;;
+
   *)
     echo "Unknown command: $command"
     exit 1

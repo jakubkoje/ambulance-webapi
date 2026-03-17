@@ -15,7 +15,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type DbService[DocType interface{}] interface {
+type DbService[DocType any] interface {
 	CreateDocument(ctx context.Context, id string, document *DocType) error
 	FindDocument(ctx context.Context, id string) (*DocType, error)
 	UpdateDocument(ctx context.Context, id string, document *DocType) error
@@ -36,13 +36,13 @@ type MongoServiceConfig struct {
 	Timeout    time.Duration
 }
 
-type mongoSvc[DocType interface{}] struct {
+type mongoSvc[DocType any] struct {
 	MongoServiceConfig
 	client     atomic.Pointer[mongo.Client]
 	clientLock sync.Mutex
 }
 
-func NewMongoService[DocType interface{}](config MongoServiceConfig) DbService[DocType] {
+func NewMongoService[DocType any](config MongoServiceConfig) DbService[DocType] {
 	enviro := func(name string, defaultValue string) string {
 		if value, ok := os.LookupEnv(name); ok {
 			return value
@@ -122,7 +122,7 @@ func (m *mongoSvc[DocType]) connect(ctx context.Context) (*mongo.Client, error) 
 	defer contextCancel()
 
 	var uri = fmt.Sprintf("mongodb://%v:%v", m.ServerHost, m.ServerPort)
-	log.Printf("Using URI: " + uri)
+	log.Printf("Using URI: %v", uri)
 
 	if len(m.UserName) != 0 {
 		uri = fmt.Sprintf("mongodb://%v:%v@%v:%v", m.UserName, m.Password, m.ServerHost, m.ServerPort)
