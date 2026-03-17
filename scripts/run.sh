@@ -35,6 +35,10 @@ case "$command" in
     mongo up
     ;;
 
+  test)
+    go test -v ./...
+    ;;
+
   *)
     echo "Unknown command: $command"
     exit 1
